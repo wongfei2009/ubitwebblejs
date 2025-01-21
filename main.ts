@@ -5,8 +5,9 @@ bluetooth.onBluetoothDisconnected(function () {
     basic.showIcon(IconNames.No)
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-    bluetooth.uartWriteLine(bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine)))
-    serial.writeLine(bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine)))
+    let text = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    bluetooth.uartWriteLine(text)
+    serial.writeLine(text)
 })
 basic.showString("BLE")
 bluetooth.startAccelerometerService()
