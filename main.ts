@@ -7,8 +7,11 @@ bluetooth.onBluetoothDisconnected(function () {
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
     let text = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
-    bluetooth.uartWriteLine("MSG:" + text)
-    serial.writeLine(text)
+    if (text.substr(0, 4) == "MSG:") {
+        let message = text.substr(4) // Skip "MSG:" prefix
+        bluetooth.uartWriteLine("MSG:" + message)
+        serial.writeLine(message)
+    }
 })
 basic.forever(function () {
     lightLevel = input.lightLevel()
