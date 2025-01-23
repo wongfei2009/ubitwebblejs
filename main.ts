@@ -1,76 +1,50 @@
 let lightLevel = 0
-// Variables for tracking music chunks
-let musicBuffer = ""
-let currentTempo = 120
-let expectedChunkIndex = 0
-let totalExpectedChunks = 0
-
+let currentTempo = 1040;
+let musicBuffer = "";
 function playMusic(tempo: number, musicString: string) {
-    try {
-        music.setTempo(tempo)
-        let sound = nerds.stringToNoteArray(musicString)
-        nerds.playNoteArray(sound, MelodyOptions.Once)
-        bluetooth.uartWriteLine("PLAYING")
-    } catch (e) {
-        bluetooth.uartWriteLine("ERROR:PLAY")
-    }
+    music.setTempo(tempo)
+    let sound = nerds.stringToNoteArray(musicString)
+    nerds.playNoteArray(sound, MelodyOptions.Once)
 }
-
 bluetooth.onBluetoothConnected(function () {
     basic.showIcon(IconNames.Yes)
 })
-
 bluetooth.onBluetoothDisconnected(function () {
     basic.showIcon(IconNames.No)
 })
-
-bluetooth.onUartDataReceived(serial.delimiters(Delimiters.Pipe), function () {
-    let data = bluetooth.uartReadUntil(serial.delimiters(Delimiters.Pipe))
+bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+    let text = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
     
-    if (data.includes("MUSIC_START:")) {
-        // Format: MUSIC_START:tempo:totalChunks|
-        let parts = data.split(":")
-        currentTempo = parseInt(parts[1])
-        totalExpectedChunks = parseInt(parts[2])
-        expectedChunkIndex = 0
+    if (text.substr(0, 4) == "MSG:") {
+        let message = text.substr(4)
+        bluetooth.uartWriteLine("MSG:" + message)
+        serial.writeLine(message)
+    } else if (text.substr(0, 6) == "MUSIC:") {
+        // Reset the buffer and store the tempo
         musicBuffer = ""
-        // Send acknowledgment
-        bluetooth.uartWriteLine("ACK:START")
-    } 
-    else if (data.includes("CHUNK:")) {
-        // Format: CHUNK:index:data|
-        let parts = data.split(":")
-        let chunkIndex = parseInt(parts[1])
-        let chunkData = parts[2]
-        
-        if (chunkIndex === expectedChunkIndex) {
-            musicBuffer += chunkData
-            expectedChunkIndex++
-            // Send acknowledgment with received chunk index
-            bluetooth.uartWriteLine("ACK:" + chunkIndex)
-            
-            // If we have all chunks, play the music
-            if (expectedChunkIndex === totalExpectedChunks) {
-                playMusic(currentTempo, musicBuffer)
-                bluetooth.uartWriteLine("COMPLETE")
-                musicBuffer = ""
-                expectedChunkIndex = 0
-            }
+        let tempoStr = text.substr(6).replace("|", "")
+        currentTempo = parseInt(tempoStr)
+    } else if (text.substr(0, 6) == "CHUNK:") {
+        let chunk = text.substr(6)
+        if (chunk.indexOf("|END") > -1) {
+            // This is the last chunk
+            chunk = chunk.replace("|END", "")
+            musicBuffer += chunk
+            // Play the complete music string
+            playMusic(currentTempo, musicBuffer)
+            // Reset buffer
+            musicBuffer = ""
         } else {
-            // Request retransmission of expected chunk
-            bluetooth.uartWriteLine("RETRY:" + expectedChunkIndex)
+            // Add chunk to buffer
+            musicBuffer += chunk
         }
     }
 })
-
-// Light sensor reporting
 basic.forever(function () {
     lightLevel = input.lightLevel()
     bluetooth.uartWriteLine("LIGHT:" + lightLevel.toString())
     basic.pause(100)
 })
-
-// Initialize services
 basic.showString("BLE")
 bluetooth.startAccelerometerService()
 bluetooth.startButtonService()
