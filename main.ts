@@ -1,5 +1,5 @@
 let lightLevel = 0
-let currentTempo = 120;
+let currentTempo = 1040;
 let musicBuffer = "";
 function playMusic(tempo: number, musicString: string) {
     music.setTempo(tempo)
