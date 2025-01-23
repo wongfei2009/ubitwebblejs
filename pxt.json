@@ -5,7 +5,7 @@
         "core": "*",
         "bluetooth": "*",
         "microphone": "*",
-        "microbit-nerds": "github:63rabbits/pxt-microbit-nerds#master"
+        "microbit-nerds": "github:wongfei2009/pxt-microbit-nerds#master"
     },
     "files": [
         "main.blocks",
