@@ -4,7 +4,8 @@
     "dependencies": {
         "core": "*",
         "bluetooth": "*",
-        "microphone": "*"
+        "microphone": "*",
+        "microbit-nerds": "github:63rabbits/pxt-microbit-nerds#master"
     },
     "files": [
         "main.blocks",

@@ -7,8 +7,8 @@ bluetooth.onBluetoothDisconnected(function () {
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
     let text = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
-    if (text.substr(0, 4) == "MSG:") {
-        let message = text.substr(4) // Skip "MSG:" prefix
+    if (text.substring(0, 4) == "MSG:") {
+        let message = text.substring(4) // Skip "MSG:" prefix
         bluetooth.uartWriteLine("MSG:" + message)
         serial.writeLine(message)
     }
