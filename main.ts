@@ -1,4 +1,6 @@
 let lightLevel = 0
+let currentTempo = 120;
+let musicBuffer = "";
 function playMusic(tempo: number, musicString: string) {
     music.setTempo(tempo)
     let sound = nerds.stringToNoteArray(musicString)
@@ -12,18 +14,29 @@ bluetooth.onBluetoothDisconnected(function () {
 })
 bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
     let text = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine))
+    
     if (text.substr(0, 4) == "MSG:") {
-        let message = text.substr(4) // Skip "MSG:" prefix
+        let message = text.substr(4)
         bluetooth.uartWriteLine("MSG:" + message)
         serial.writeLine(message)
     } else if (text.substr(0, 6) == "MUSIC:") {
-        let musicData = text.substr(6) // Skip "MUSIC:" prefix
-        let parts = musicData.split("|")
-        if (parts.length === 2) {
-            let tempo = parseInt(parts[0])
-            let musicString = parts[1]            
-            // Play the music
-            playMusic(tempo, musicString)
+        // Reset the buffer and store the tempo
+        musicBuffer = ""
+        let tempoStr = text.substr(6).replace("|", "")
+        currentTempo = parseInt(tempoStr)
+    } else if (text.substr(0, 6) == "CHUNK:") {
+        let chunk = text.substr(6)
+        if (chunk.indexOf("|END") > -1) {
+            // This is the last chunk
+            chunk = chunk.replace("|END", "")
+            musicBuffer += chunk
+            // Play the complete music string
+            playMusic(currentTempo, musicBuffer)
+            // Reset buffer
+            musicBuffer = ""
+        } else {
+            // Add chunk to buffer
+            musicBuffer += chunk
         }
     }
 })
