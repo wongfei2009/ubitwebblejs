@@ -2,7 +2,7 @@
 
 This project turns a BBC micro:bit into a versatile Bluetooth Low Energy (BLE) device that can be controlled from a web browser. It allows a web-based client to interact with the micro:bit's sensors and actuators.
 
-> Try it out with the companion web app: [https://wongfei2009.github.io/ubitwebblejs/](https://wongfei2009.github.io/ubitwebblejs/)
+> Try it out with the companion web app: [https://wongfei2009.github.io/microbit-webble-p5js/](https://wongfei2009.github.io/microbit-webble-p5js/)
 
 ## Features
 
@@ -46,4 +46,6 @@ To edit this repository in MakeCode.
 #### Metadata (used for search, rendering)
 
 * for PXT/microbit
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+
+<script src="https://makecode.com/gh-pages-embed.js"></script>
+<script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
