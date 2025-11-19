@@ -35,19 +35,67 @@ This repository can be added as an **extension** in MakeCode.
 * click on **Extensions** under the gearwheel menu
 * search for **https://github.com/wongfei2009/ubitwebblejs** and import
 
-## Edit this project
+## Build and Deploy
 
-To edit this repository in MakeCode.
+### Prerequisites
 
-* open [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* click on **Import** then click on **Import URL**
-* paste **https://github.com/wongfei2009/ubitwebblejs** and click import
+* Node.js (v14 or higher)
+* npm (comes with Node.js)
 
-#### Metadata (used for search, rendering)
+### Setup
 
-* for PXT/microbit
+1. Clone the repository:
+```bash
+git clone https://github.com/wongfei2009/ubitwebblejs.git
+cd ubitwebblejs
+```
 
-<!--
-<script src="https://makecode.com/gh-pages-embed.js"></script>
-<script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
--->
+2. Install PXT command-line tools and set up the micro:bit target:
+```bash
+npm install -g pxt
+pxt target microbit
+```
+
+3. Install project dependencies:
+```bash
+pxt install
+```
+
+### Building
+
+To build the project and generate the `.hex` file:
+
+```bash
+pxt build
+```
+
+Or use the Makefile:
+```bash
+make build
+```
+
+The compiled files will be generated in the `built/` directory. The main file is `built/binary.hex`.
+
+### Deploying
+
+**Option 1: Automatic deployment** (if micro:bit is connected via USB):
+```bash
+pxt deploy
+```
+
+Or use the Makefile:
+```bash
+make deploy
+```
+
+**Option 2: Manual deployment**:
+1. Connect your micro:bit to your computer via USB
+2. The micro:bit will appear as a USB drive named "MICROBIT"
+3. Copy the `built/binary.hex` file to the MICROBIT drive
+4. The micro:bit will automatically flash the new program
+
+### Important Notes
+
+- This project uses **Bluetooth** services, which are incompatible with the **Radio** module in MakeCode
+- Make sure only Bluetooth (not Radio) is listed in the dependencies in `pxt.json`
+- After flashing, the micro:bit will display "BLE" on the LED matrix when ready
